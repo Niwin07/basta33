@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>World Paradise Tours</title>
+        <link rel="stylesheet" href="../src/css/index.css">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        <script type="module" src="/js/reserva.js" defer></script>
+        <script type="module" src="/js/Main.js" defer></script>
+    </head>
+<body>
+
+  <div id="content-wrap">
+    <header>
+      <nav class="navbar">
+        <div class="logo">
+          <h1>World Paradise Tours</h1>
+        </div>
+        
+        <ul class="nav-links">
+          <li class="dropdown">
+            <a href="#" class="dropbtn">Explorar <i class="fas fa-chevron-down"></i></a>
+            <div class="dropdown-content">
+              <a href="/Destinos.html">Tours</a>
+              <a href="#section4">Destinos</a>
+              <a href="#">Paquetes</a>
+              <a href="#">Paquetes personalizados</a>
+            </div>
+          </li>
+          <li><a href="#section5">Contacto</a></li>
+          <li class="dropdown">
+            <a href="#" class="dropbtn">Mi cuenta <i class="fas fa-chevron-down"></i></a>
+            <div class="dropdown-content">
+              <a href="/cuenta.html">Mi perfil</a>
+              <a href="#">Mis reservas</a>
+              <a href="#" onclick="logOut()">Cerrar Sesion</a>
+            </div>
+          </li>
+          <li class="dropdown">
+            <a href="#" class="dropbtn">Idioma <i class="fas fa-chevron-down"></i></a>
+            <div class="dropdown-content">
+              <a href="#" data-lang="es">Español</a>
+              <a href="#" data-lang="en">English</a>
+              <a href="#" data-lang="pt">Português</a>
+            </div>
+          </li>
+          <li>
+            <a href="/carrito.html" class="cart-icon">
+              <i class="fas fa-shopping-cart"></i>
+              <span class="cart-count">0</span>
+            </a>
+          </li>
+        </ul>
+        
+        <div class="burger">
+          <div class="line1"></div>
+          <div class="line2"></div>
+          <div class="line3"></div>
+        </div>
+      </nav>
+    </header>
+  </div>
+
+      <div id="reserva-container">
+        <!-- El contenido se llenará dinámicamente con JavaScript -->
+      </div>
+
+      <footer>
+        <div class="footer-content">
+          <div class="footer-info">
+            <h3>World Paradise Tours</h3>
+            <p>Explora Argentina con el mejor acompañamiento</p>
+          </div>
+          <div class="footer-links">
+            <a href="#section1">Tours</a>
+            <a href="#section4">Destinos</a>
+            <a href="#section5">Contacto</a>
+          </div>
+        </div>
+        <div class="footer-copyright">
+          <p>Desarrollado por: <a href="https://www.linkedin.com/in/henry-nehuen-mesias-rios-41a756297">Nehuen Mesias</a></p>
+          <p>Todos los derechos reservados</p>
+        </div>
+      </footer>
+       
+      <script src="/js/Main.js"></script>
+      <script>
+        async function checkUserAuthentication(tour_Id) {
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+              console.log("El usuario no está autenticado, redirigiendo a la página de acceso");
+              window.location.href = 'acceso.html';
+              return false;
+            }
+
+            try {
+              const response = await fetch('http://localhost:3000/auth/me', {
+                headers: {
+                  'Authorization': `Bearer ${token}`
+                }
+              });
+
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+
+              const data = await response.json();
+              console.log("Usuario autenticado:", data.user);
+
+              // Actualizar la interfaz de usuario con los datos recibidos
+
+              actualizarInterfazUsuario(data.user);
+              realizarReserva(tour_Id);
+
+
+
+              return data.user;
+
+            } catch (error) {
+              console.error('Error al verificar la autenticación del usuario:', error);
+              manejarErrorAutenticacion(error);
+              return false;
+            }
+          }
+
+           function actualizarInterfazUsuario(usuario) {
+            const nombreUsuarioElement = document.getElementById('nombre-usuario');
+             if (nombreUsuarioElement) {
+               nombreUsuarioElement.textContent = `${usuario.nombres} ${usuario.apellidos}`;
+             }
+           }
+
+          function manejarErrorAutenticacion(error) {
+            console.error('Error de autenticación:', error);
+            const mensajeErrorElement = document.getElementById('mensaje-error');
+            if (mensajeErrorElement) {
+              mensajeErrorElement.textContent = 'Error de autenticación. Por favor, inicie sesión nuevamente.';
+            }
+            setTimeout(() => {
+              window.location.href = 'acceso.html';
+            }, 3000);
+          }
+
+
+
+          async function realizarReserva(tourId) {
+            const token = localStorage.getItem('token');
+            if (!token) {
+              console.error('No hay token de autenticación');
+              window.location.href = 'acceso.html';
+              return;
+            }
+          
+            const fechaInicio = new Date().toISOString().split('T')[0]; // Fecha actual en formato YYYY-MM-DD
+            const fechaFinInput = document.getElementById("fecha").value; // Obtener el valor del input
+            const fechaFin = new Date(fechaFinInput).toISOString().split('T')[0]; // Transformar el valor al 
+          
+            try {
+              const response = await fetch('http://localhost:3000/reservas', {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  tourId,
+                  fechaInicio,
+                  fechaFin,
+                  status: 'Pendiente' // Por defecto, la reserva se crea como pendiente
+                })
+              });
+          
+              if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+              }
+          
+              const data = await response.json();
+              console.log('Reserva creada exitosamente:', data);
+              // Aquí puedes actualizar la interfaz para mostrar la confirmación de la reserva
+              mostrarConfirmacionReserva(data);
+            } catch (error) {
+              console.error('Error al crear la reserva:', error);
+              mostrarErrorReserva(error);
+            }
+          }
+          
+          function mostrarConfirmacionReserva(data) {
+            // Implementa esta función para mostrar un mensaje de éxito en la interfaz
+            alert(`Reserva creada exitosamente. ID de reserva: ${data.reservaId}`);
+          }
+          
+          function mostrarErrorReserva(error) {
+            // Implementa esta función para mostrar un mensaje de error en la interfaz
+            alert(`Error al crear la reserva: ${error.message}`);
+          }
+
+
+
+
+      </script>
+
+      <style>
+      /* Estilos generales */
+
+/* Contenedor del formulario de reserva */
+.reserva-wrapper {
+    display: flex;
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 2rem auto;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    overflow: hidden;
+    flex-wrap: wrap; /* Para mejorar la flexibilidad en pantallas más pequeñas */
+}
+
+/* Información del tour */
+.tour-info {
+    flex: 1;
+    padding: 2rem;
+    min-width: 300px; /* Asegura un tamaño mínimo para la información del tour */
+}
+
+.tour-info h1 {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.tour-image {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    object-fit: cover;
+}
+
+.tour-details p {
+    margin-bottom: 0.5rem;
+    color: #666;
+    display: flex;
+    align-items: center;
+}
+
+.tour-details i {
+    margin-right: 0.5rem;
+}
+
+/* Contenedor del formulario de reserva */
+.reserva-form-container {
+    flex: 1;
+    padding: 2rem;
+    min-width: 300px; /* Asegura un tamaño mínimo para el formulario */
+}
+
+.reserva-form-container h2 {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.reserva-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.reserva-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #666;
+}
+
+/* Aplicar estilos consistentes a todos los inputs */
+.reserva-form input[type="date"],
+.reserva-form input[type="number"] {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: inherit;
+    font-size: 1rem;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+    transition: box-shadow 0.3s ease, background 0.3s ease; /* Efecto de transición */
+    background: linear-gradient(to right, #f9f9f9, #e6e6e6); /* Fondo degradado */
+    padding-left: 2.5rem; /* Espacio para el icono */
+    position: relative; /* Para posicionar el icono */
+    outline: none; /* Eliminar el borde de enfoque predeterminado */
+}
+
+.reserva-form input[type="date"]:hover,
+.reserva-form input[type="number"]:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada al pasar el mouse */
+}
+
+.reserva-form input[type="date"]:focus,
+.reserva-form input[type="number"]:focus {
+    background: linear-gradient(to right, #e6e6e6, #d4d4d4); /* Cambiar el fondo al enfocarse */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada al enfocarse */
+    border-color: #aaa; /* Cambiar el color del borde al enfocarse */
+}
+
+.reserva-form input[type="date"]::before,
+.reserva-form input[type="number"]::before {
+    content: "\f073"; /* Unicode del icono de calendario (Font Awesome) */
+    font-family: 'Font Awesome 5 Free'; /* Familia de Font Awesome */
+    font-weight: 900; /* Peso del icono */
+    position: absolute;
+    left: 1rem;
+    color: #aaa; /* Color del icono */
+    font-size: 1.2rem; /* Tamaño del icono */
+    pointer-events: none; /* El icono no debe ser interactivo */
+}
+
+/* Resumen de costos */
+.resumen-costos {
+    background: #f9f9f9;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.resumen-costos p {
+    margin: 0.5rem 0;
+}
+
+/* Opciones de pago */
+.radio-label {
+    display: block;
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    color: #666;
+}
+
+.radio-custom {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 20px;
+    width: 20px;
+    background-color: #eee;
+    border-radius: 50%;
+}
+
+.radio-label:hover input ~ .radio-custom {
+    background-color: #ccc;
+}
+
+.radio-label input:checked ~ .radio-custom {
+    background-color: #2196F3;
+}
+
+/* Botones */
+.submit-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    margin-top: 10px; /* Espacio adicional para separación */
+}
+
+.submit-btn.secondary {
+    background-color: #2196F3;
+}
+
+.submit-btn:hover {
+    background-color: #45a049;
+}
+
+.submit-btn.secondary:hover {
+    background-color: #1976D2;
+}
+
+/* Estilos adicionales para el input de fecha */
+#fecha {
+    font-family: 'Roca Regular';
+    font-size: 1rem;
+    color: black;
+    background: linear-gradient(to right, #f9f9f9, #e6e6e6); /* Fondo degradado */
+    padding: 0.5rem;
+    padding-left: 2.5rem; /* Espacio para el icono */
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    transition: box-shadow 0.3s ease, background 0.3s ease; /* Efecto de transición */
+    position: relative; /* Para posicionar el icono */
+    outline: none; /* Eliminar el borde de enfoque predeterminado */
+}
+
+#fecha:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada al pasar el mouse */
+}
+
+#fecha:focus {
+    background: linear-gradient(to right, #e6e6e6, #d4d4d4); /* Cambiar el fondo al enfocarse */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra más pronunciada al enfocarse */
+    border-color: #aaa; /* Cambiar el color del borde al enfocarse */
+}
+
+#fecha::before {
+    content: "\f073"; /* Unicode del icono de calendario (Font Awesome) */
+    font-family: 'Font Awesome 5 Free'; /* Familia de Font Awesome */
+    font-weight: 900; /* Peso del icono */
+    position: absolute;
+    left: 1rem;
+    color: #aaa; /* Color del icono */
+    font-size: 1.2rem; /* Tamaño del icono */
+    pointer-events: none; /* El icono no debe ser interactivo */
+}
+   
+      </style>
+
+</body>
+</html>

@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Carrito - World Paradise Tours</title>
+    <link rel="stylesheet" href="../src/css/index.css">
+    <script type="module" src="../js/Main.js" defer></script>
+    <script type="module" src="/js/carrito.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div id="content-wrap">
+        <header>
+          <nav class="navbar">
+            <div class="logo">
+              <h1>World Paradise Tours</h1>
+            </div>
+            
+            <ul class="nav-links">
+              <li class="dropdown">
+                <a href="#" class="dropbtn">Explorar <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-content">
+                  <a href="/Destinos.html">Tours</a>
+                  <a href="#section4">Destinos</a>
+                  <a href="#">Paquetes</a>
+                  <a href="#">Paquetes personalizados</a>
+                </div>
+              </li>
+              <li><a href="#section5">Contacto</a></li>
+              <li class="dropdown">
+                <a href="#" class="dropbtn">Mi cuenta <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-content">
+                  <a href="/cuenta.html">Mi perfil</a>
+                  <a href="#">Mis reservas</a>
+                  <a href="#" onclick="logOut()">Cerrar Sesion</a>
+                </div>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropbtn">Idioma <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-content">
+                  <a href="#" data-lang="es">Español</a>
+                  <a href="#" data-lang="en">English</a>
+                  <a href="#" data-lang="pt">Português</a>
+                </div>
+              </li>
+              <li>
+                <a href="/mi-carrito.html" class="cart-icon">
+                  <i class="fas fa-shopping-cart"></i>
+                  <span class="cart-count">0</span>
+                </a>
+              </li>
+            </ul>
+            
+            <div class="burger">
+              <div class="line1"></div>
+              <div class="line2"></div>
+              <div class="line3"></div>
+            </div>
+          </nav>
+        </header>
+    </div>
+
+    <main role="main">
+        <div class="cart-container">
+            <h1 class="cart-title">Mi Carrito</h1>
+            <div id="carrito-container">
+                <!-- Cart items will be dynamically inserted here -->
+            </div>
+            <div class="cart-summary">
+                <p class="cart-total">Total: $<span id="total-amount">0</span></p>
+                <button class="checkout-btn" onclick="realizarSolicitud()">Proceder al pago</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+          <div class="footer-info">
+            <h3>World Paradise Tours</h3>
+            <p>Explora Argentina con el mejor acompañamiento</p>
+          </div>
+          <div class="footer-links">
+            <a href="#section1">Tours</a>
+            <a href="#section4">Destinos</a>
+            <a href="#section5">Contacto</a>
+          </div>
+          <a href="http://qr.afip.gob.ar/?qr=Mwgep1YitRizNXo36eExrw,," target="_F960AFIPInfo"><img src="http://www.afip.gob.ar/images/f960/DATAWEB.jpg" border="0" alt="logo-afip"></a>
+        </div>
+        <div class="footer-copyright">
+          <p>Desarrollado por: <a href="https://www.linkedin.com/in/henry-nehuen-mesias-rios-41a756297">Nehuen Mesias</a></p>
+          <p>Todos los derechos reservados</p>
+        </div>
+    </footer>
+
+    <script>
+        function editarItem(itemId) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+        
+            const nuevaCantidad = prompt("Nueva cantidad de personas:", "1");
+            if (nuevaCantidad === null) return;
+        
+            let nuevasEdades = "";
+            for (let i = 0; i < parseInt(nuevaCantidad); i++) {
+            const edad = prompt(`Nueva edad de la persona ${i + 1}:`);
+            if (edad === null) return;
+            nuevasEdades += edad + ",";
+            }
+            nuevasEdades = nuevasEdades.slice(0, -1);
+        
+            fetch(`http://localhost:3000/api/carrito/editar/${itemId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({
+                cantidad: parseInt(nuevaCantidad),
+                edades: nuevasEdades
+            })
+            })
+            .then(response => response.json())
+            .then(data => {
+            if (data.success) {
+                alert('Item actualizado correctamente');
+                loadCarrito(); // Recargar el carrito
+            } else {
+                alert('Error al actualizar el item');
+            }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+        
+        function eliminarItem(itemId) {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            fetch(`http://localhost:3000/api/carrito/eliminar/${itemId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Item eliminado correctamente');
+                    loadCarrito();
+                } else {
+                    alert('Error al eliminar el item');
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+
+    
+
+    <!-- <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const cartItems = document.getElementById('cart-items');
+            const totalAmount = document.getElementById('total-amount');
+            const checkoutBtn = document.getElementById('checkout-btn');
+
+            // En Main.js o en un nuevo archivo carrito.js
+            function loadCarrito() {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Por favor, inicia sesión para ver tu carrito.');
+                return;
+            }
+
+            fetch('http://localhost:3000/api/carrito', {
+                headers: {
+                'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const carritoContainer = document.getElementById('carrito-container');
+                carritoContainer.innerHTML = '';
+
+                data.items.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'carrito-item';
+                itemElement.innerHTML = `
+                    <h3>${item.Nombre_tour}</h3>
+                    <p>Cantidad: ${item.Cantidad_personas}</p>
+                    <p>Edades: ${item.Edad_Personas || 'No especificado'}</p>
+                    <p>Precio: $${item.Precio_unitario}</p>
+                    <button onclick="editarItem(${item.ID})">Editar</button>
+                    <button onclick="eliminarItem(${item.ID})">Eliminar</button>
+                `;
+                carritoContainer.appendChild(itemElement);
+                });
+
+                const totalElement = document.createElement('div');
+                totalElement.innerHTML = `<h3>Total: $${data.total}</h3>`;
+                carritoContainer.appendChild(totalElement);
+
+                const solicitarButton = document.createElement('button');
+                solicitarButton.textContent = 'Realizar solicitud';
+                solicitarButton.onclick = realizarSolicitud;
+                carritoContainer.appendChild(solicitarButton);
+            })
+            .catch(error => console.error('Error al cargar el carrito:', error));
+            }
+
+// Llamar a esta función cuando se cargue carrito.html
+            document.addEventListener('DOMContentLoaded', loadCarrito);
+
+            function updateDate(index, newDate) {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                cart[index].date = newDate;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                loadCart();
+            }
+
+            function updatePeople(index, newPeople) {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                cart[index].people = parseInt(newPeople);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                loadCart();
+            }
+
+            function updateAges(index, newAges) {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                cart[index].ages = newAges;
+                localStorage.setItem('cart', JSON.stringify(cart));
+                loadCart();
+            }
+
+            function removeItem(index) {
+                const cart = JSON.parse(localStorage.getItem('cart')) || [];
+                cart.splice(index, 1);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                loadCart();
+            }
+
+            checkoutBtn.addEventListener('click', () => {
+                // Aquí implementarías la lógica para proceder al pago
+                alert('Implementar lógica de pago');
+            });
+
+            loadCart();
+        });
+    </script> -->
+</body>
+</html>

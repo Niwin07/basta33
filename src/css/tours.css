@@ -1,0 +1,273 @@
+.section.secciones-tours {
+    height: 100vh;
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    text-align: center;
+    padding: 20px;
+}
+
+.image-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 20px;
+    gap: 25px;
+}
+
+.image-container img {
+    width: 60%;
+    max-width: 300px;
+    height: 350px;
+    cursor: pointer;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.image-container img:hover {
+transform: scale(1.05);
+box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.9);
+}
+
+.modal-content {
+    margin: auto;
+    margin-top: 200px;
+    display: block;
+    width: 80%;
+    max-width: 800px;
+    height: 500px;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(255,255,255,0.2);
+}
+
+.close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    cursor: pointer;
+}
+/* Estilos para títulos */
+.titulo-tour {
+font-size: 3.5em;
+font-weight: 700;
+letter-spacing: 2px;
+text-transform: uppercase;
+color: #ffffff;
+margin-bottom: 30px;
+text-shadow: 2px 2px 4px rgba(0,0,0,0.5),
+             0 0 20px rgba(255,255,255,0.2);
+padding: 20px;
+border-bottom: 2px solid rgba(255,255,255,0.3);
+position: relative;
+display: inline-block;
+}
+
+.titulo-tour::after {
+content: '';
+position: absolute;
+left: 50%;
+bottom: -10px;
+transform: translateX(-50%);
+width: 60px;
+height: 3px;
+background-color: #ffffff;
+}
+
+#slogan {
+font-size: 1.5em;
+font-style: italic;
+margin-bottom: 30px;
+}
+
+h2 {
+font-size: 2.5em;
+margin-bottom: 15px;
+text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+}
+
+/* Estilos para párrafos */
+p {
+font-size: 1.2em;
+line-height: 1.6;
+max-width: 800px;
+margin: 0 auto 15px;
+font-family: 'Roca Regular', sans-serif;
+}
+
+/* Estilos específicos para cada sección */
+.presentation {
+background-attachment: fixed;
+}
+
+.location, .difficulty, .more-info, .booking {
+background-color: rgba(0,0,0,0.5);
+}
+
+/* Mejoras para las imágenes en el contenedor */
+
+
+.subtitulo {
+font-weight: 300;
+color: rgba(255, 255, 255, 0.85);
+letter-spacing: 1.5px;
+text-transform: uppercase;
+margin-top: 10px;
+margin-bottom: 25px;
+padding-bottom: 10px;
+position: relative;
+display: inline-block;
+}
+
+.subtitulo::after {
+content: '';
+position: absolute;
+bottom: 0;
+left: 50%;
+transform: translateX(-50%);
+width: 40px;
+height: 1px;
+background-color: rgba(255, 255, 255, 0.6);
+}
+
+
+/* Estilos para la sección de reserva */
+.booking p {
+font-weight: bold;
+}
+
+/* Mejoras para el modal */
+
+.close:hover {
+color: #bbb;
+text-decoration: none;
+cursor: pointer;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+.section.secciones-tours {
+    height: auto;
+    min-height: 100vh;
+}
+
+.image-container {
+    flex-direction: column;
+    align-items: center;
+}
+
+.image-container img {
+    width: 90%;
+    margin-bottom: 20px;
+}
+
+.titulo-tour {
+    font-size: 2.5em;
+}
+
+h2 {
+    font-size: 2em;
+}
+}
+#ubicacion{
+margin-left: 600px;
+}
+.ubicacion-desc{
+position: absolute;
+text-align: left;
+align-items: left;
+margin-right: 1000px;
+max-width: 500px;
+width: 100%;
+font-size: 25px;
+}
+
+#dificultad{
+    margin-right: 600px;
+}
+.dificultad-desc{
+    position: absolute;
+    text-align: center;
+    align-items: right;
+    margin-left: 1000px;
+    max-width: 500px;
+    width: 100%;
+    font-size: 25px;
+}
+
+.reserva{
+    text-align: center;
+    align-items: center;
+    width: 400px;
+}
+.reserva .botonmoderno-tours{
+    margin-top: 80px ;
+    font-size: 25px;
+
+}
+#mas-informacion{
+    gap: 800px;
+}
+.mas-info-desc{
+    position: absolute;
+    text-align: center;
+    width: 400px;
+    font-size: 20px;
+}
+
+#masinfo{
+    position: absolute;
+    margin-bottom: 340px;
+}
+.image-subtitle-wrapper {
+    display: inline-block;
+    vertical-align: top;
+    width: 45%; /* Ajusta según sea necesario */
+    margin: 0 2.5%;
+}
+
+.image-subtitle-wrapper img {
+    width: 120%;
+    height: 350px;
+    object-fit: cover;
+    object-position: center;
+}
+
+.sub-desc {
+    margin-top: 15px;
+    margin-left: 40px;
+    text-align: center;
+    font-size: 1.4em;
+    color: #ffffff;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 10px 15px;
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
+}
+
+.image-subtitle-wrapper:hover .sub-desc {
+    background-color: rgba(0, 0, 0, 0.8);
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
